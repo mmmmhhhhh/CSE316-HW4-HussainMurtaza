@@ -5,24 +5,25 @@
             "lastName": "Shmo",
             "email": "joe@shmo.com",
             "passwordHash": "$2a$10$dPEwsAVi1ojv2RfxxTpZjuKSAbep7zEKb5myegm.ATbQ4sJk4agGu",
-            "playlists": [
-                "68f524b611e0f3901871f164",
-                "68f526c1ec1ea2ad00a6fae0"
-            ]
+            "playlists": []
         },
         {
             "firstName": "Jane",
             "lastName": "Doe",
             "email": "jane@doe.com",
             "passwordHash": "$2a$10$dPEwsAVi1ojv2RfxxTpZjuKSAbep7zEKb5myegm.ATbQ4sJk4agGu",
-            "playlists": [
-                "68f526c4ec1ea2ad00a6fae8"
-            ]
+            "playlists": []
+        },
+        {
+            "firstName": "Your",
+            "lastName": "Name",
+            "email": "your@email.com",
+            "passwordHash": "$2a$10$dPEwsAVi1ojv2RfxxTpZjuKSAbep7zEKb5myegm.ATbQ4sJk4agGu",
+            "playlists": []
         }
     ],
     "playlists": [
         {
-            "_id": "68f524b611e0f3901871f164",
             "ownerEmail": "joe@shmo.com",
             "name": "Spacey",
             "songs": [
@@ -119,7 +120,6 @@
             ]
         },
         {
-            "_id": "68f526c1ec1ea2ad00a6fae0",
             "ownerEmail": "joe@shmo.com",
             "name": "Any Colour You Like",
             "songs": [
@@ -192,7 +192,6 @@
             ]
         },
         {
-            "_id": "68f526c4ec1ea2ad00a6fae8",
             "ownerEmail": "jane@doe.com",
             "name": "Don't be Rude",
             "songs": [
@@ -207,6 +206,72 @@
                     "artist": "The Clash",
                     "year": 1979,
                     "youTubeId": "uEK9oK02D1M"
+                }
+            ]
+        },
+        {
+            "ownerEmail": "your@email.com",
+            "name": "My Top Songs 2024",
+            "songs": [
+                {
+                    "title": "Blinding Lights",
+                    "artist": "The Weeknd",
+                    "year": 2019,
+                    "youTubeId": "4NRXx6U8ABQ"
+                },
+                {
+                    "title": "Shape of You",
+                    "artist": "Ed Sheeran",
+                    "year": 2017,
+                    "youTubeId": "JGwWNGJdvx8"
+                },
+                {
+                    "title": "Levitating",
+                    "artist": "Dua Lipa",
+                    "year": 2020,
+                    "youTubeId": "TUVcZfQe-Kw"
+                },
+                {
+                    "title": "As It Was",
+                    "artist": "Harry Styles",
+                    "year": 2022,
+                    "youTubeId": "H5v3kku4y6Q"
+                },
+                {
+                    "title": "Anti-Hero",
+                    "artist": "Taylor Swift",
+                    "year": 2022,
+                    "youTubeId": "b1kbLwvqugk"
+                }
+            ]
+        },
+        {
+            "ownerEmail": "your@email.com",
+            "name": "Study & Focus",
+            "songs": [
+                {
+                    "title": "Weightless",
+                    "artist": "Marconi Union",
+                    "year": 2011,
+                    "youTubeId": "UfcAVejslrU"
+                },
+                {
+                    "title": "Clair de Lune",
+                    "artist": "Claude Debussy",
+                    "year": 1905,
+                    "youTubeId": "CvFH_6DNRCY"
+                },
+                {
+                    "title": "Gymnopédie No.1",
+                    "artist": "Erik Satie",
+                    "year": 1888,
+                    "youTubeId": "S-Xm7s9eGxU"
+                },
+                {
+                    "title": "Ambient 1",
+                    "artist": "Brian Eno",
+                    "year": 1978,
+                    "youTubeId": "CWu4ieBqBFQ"
                 }
             ]
         }
