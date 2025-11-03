@@ -1,6 +1,6 @@
-const auth = require('../auth')
-const User = require('../models/user-model')
-const bcrypt = require('bcryptjs')
+const auth = require('../auth');
+const dbManager = require('../db');
+const bcrypt = require('bcryptjs');
 
 getLoggedIn = async (req, res) => {
     try {
@@ -10,11 +10,11 @@ getLoggedIn = async (req, res) => {
                 loggedIn: false,
                 user: null,
                 errorMessage: "?"
-            })
+            });
         }
 
-        const loggedInUser = await User.findOne({ _id: userId });
-        console.log("loggedInUser: " + loggedInUser);
+        const loggedInUser = await dbManager.findUserById(userId);
+        console.log("loggedInUser: " + JSON.stringify(loggedInUser));
 
         return res.status(200).json({
             loggedIn: true,
@@ -23,12 +23,12 @@ getLoggedIn = async (req, res) => {
                 lastName: loggedInUser.lastName,
                 email: loggedInUser.email
             }
-        })
+        });
     } catch (err) {
         console.log("err: " + err);
         res.json(false);
     }
-}
+};
 
 loginUser = async (req, res) => {
     console.log("loginUser");
@@ -41,14 +41,14 @@ loginUser = async (req, res) => {
                 .json({ errorMessage: "Please enter all required fields." });
         }
 
-        const existingUser = await User.findOne({ email: email });
-        console.log("existingUser: " + existingUser);
+        const existingUser = await dbManager.findUserByEmail(email);
+        console.log("existingUser: " + JSON.stringify(existingUser));
         if (!existingUser) {
             return res
                 .status(401)
                 .json({
                     errorMessage: "Wrong email or password provided."
-                })
+                });
         }
 
         console.log("provided password: " + password);
@@ -59,31 +59,33 @@ loginUser = async (req, res) => {
                 .status(401)
                 .json({
                     errorMessage: "Wrong email or password provided."
-                })
+                });
         }
 
         // LOGIN THE USER
-        const token = auth.signToken(existingUser._id);
+        // For MongoDB, use _id; for PostgreSQL, use id
+        const userId = existingUser._id || existingUser.id;
+        const token = auth.signToken(userId);
         console.log(token);
 
         res.cookie("token", token, {
             httpOnly: true,
-            secure: true,
-            sameSite: true
+            secure: false,   //  Use false while running locally
+            sameSite: 'lax'  //  Proper value for local dev
         }).status(200).json({
             success: true,
             user: {
                 firstName: existingUser.firstName,
-                lastName: existingUser.lastName,  
-                email: existingUser.email              
+                lastName: existingUser.lastName,
+                email: existingUser.email
             }
-        })
+        });
 
     } catch (err) {
         console.error(err);
         res.status(500).send();
     }
-}
+};
 
 logoutUser = async (req, res) => {
     res.cookie("token", "", {
@@ -92,19 +94,21 @@ logoutUser = async (req, res) => {
         secure: true,
         sameSite: "none"
     }).send();
-}
+};
 
 registerUser = async (req, res) => {
     console.log("REGISTERING USER IN BACKEND");
     try {
         const { firstName, lastName, email, password, passwordVerify } = req.body;
         console.log("create user: " + firstName + " " + lastName + " " + email + " " + password + " " + passwordVerify);
+        
         if (!firstName || !lastName || !email || !password || !passwordVerify) {
             return res
                 .status(400)
                 .json({ errorMessage: "Please enter all required fields." });
         }
         console.log("all fields provided");
+        
         if (password.length < 8) {
             return res
                 .status(400)
@@ -113,23 +117,25 @@ registerUser = async (req, res) => {
                 });
         }
         console.log("password long enough");
+        
         if (password !== passwordVerify) {
             return res
                 .status(400)
                 .json({
                     errorMessage: "Please enter the same password twice."
-                })
+                });
         }
         console.log("password and password verify match");
-        const existingUser = await User.findOne({ email: email });
-        console.log("existingUser: " + existingUser);
+        
+        const existingUser = await dbManager.findUserByEmail(email);
+        console.log("existingUser: " + JSON.stringify(existingUser));
         if (existingUser) {
             return res
                 .status(400)
                 .json({
                     success: false,
                     errorMessage: "An account with this email address already exists."
-                })
+                });
         }
 
         const saltRounds = 10;
@@ -137,12 +143,17 @@ registerUser = async (req, res) => {
         const passwordHash = await bcrypt.hash(password, salt);
         console.log("passwordHash: " + passwordHash);
 
-        const newUser = new User({firstName, lastName, email, passwordHash});
-        const savedUser = await newUser.save();
-        console.log("new user saved: " + savedUser._id);
+        const savedUser = await dbManager.createUser({ 
+            firstName, 
+            lastName, 
+            email, 
+            passwordHash 
+        });
+        console.log("new user saved: " + (savedUser._id || savedUser.id));
 
         // LOGIN THE USER
-        const token = auth.signToken(savedUser._id);
+        const userId = savedUser._id || savedUser.id;
+        const token = auth.signToken(userId);
         console.log("token:" + token);
 
         await res.cookie("token", token, {
@@ -153,10 +164,10 @@ registerUser = async (req, res) => {
             success: true,
             user: {
                 firstName: savedUser.firstName,
-                lastName: savedUser.lastName,  
-                email: savedUser.email              
+                lastName: savedUser.lastName,
+                email: savedUser.email
             }
-        })
+        });
 
         console.log("token sent");
 
@@ -164,11 +175,11 @@ registerUser = async (req, res) => {
         console.error(err);
         res.status(500).send();
     }
-}
+};
 
 module.exports = {
     getLoggedIn,
     registerUser,
     loginUser,
     logoutUser
-}
+};
