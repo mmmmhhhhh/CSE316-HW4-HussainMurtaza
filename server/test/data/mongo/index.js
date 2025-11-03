@@ -1,41 +1,41 @@
 const dotenv = require('dotenv').config({ path: __dirname + '/../../../.env' });
-
-async function clearCollection(collection, collectionName) {
-    try {
-        await collection.deleteMany({});
-        console.log(collectionName + " cleared");
-    }
-    catch (err) {
-        console.log(err);
-    }
-}
-
-async function fillCollection(collection, collectionName, data) {
-    for (let i = 0; i < data.length; i++) {
-        let doc = new collection(data[i]);
-        await doc.save();
-    }
-    console.log(collectionName + " filled");
-}
+const MongoDBManager = require('../../../db/mongodb');
 
 async function resetMongo() {
-    const Playlist = require('../../../models/playlist-model')
-    const User = require("../../../models/user-model")
-    const testData = require("../example-db-data.json")
+    const dbManager = new MongoDBManager();
+    const testData = require("../example-db-data.json");
+    
+    console.log("Resetting the Mongo DB");
 
-    console.log("Resetting the Mongo DB")
-    await clearCollection(Playlist, "Playlist");
-    await clearCollection(User, "User");
-    await fillCollection(Playlist, "Playlist", testData.playlists);
-    await fillCollection(User, "User", testData.users);
+    try {
+        // Connect to database
+        await dbManager.connect(process.env.DB_CONNECT);
+
+        // Clear existing data
+        await dbManager.deleteAllPlaylists();
+        console.log("Playlists cleared");
+        
+        await dbManager.deleteAllUsers();
+        console.log("Users cleared");
+
+        // Fill playlists
+        for (let i = 0; i < testData.playlists.length; i++) {
+            await dbManager.createPlaylist(testData.playlists[i]);
+        }
+        console.log("Playlists filled");
+
+        // Fill users
+        for (let i = 0; i < testData.users.length; i++) {
+            await dbManager.createUser(testData.users[i]);
+        }
+        console.log("Users filled");
+
+        console.log("Mongo DB reset complete!");
+        process.exit(0);
+    } catch (error) {
+        console.error("Error resetting Mongo DB:", error);
+        process.exit(1);
+    }
 }
 
-const mongoose = require('mongoose')
-mongoose
-    .connect(process.env.MONGO_URI, { useNewUrlParser: true })
-    .then(() => { resetMongo() })
-    .catch(e => {
-        console.error('Connection error', e.message)
-    })
-
-
+resetMongo();
