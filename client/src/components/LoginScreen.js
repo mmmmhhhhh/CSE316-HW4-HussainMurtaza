@@ -20,16 +20,16 @@ export default function LoginScreen() {
     const handleSubmit = (event) => {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
+
         auth.loginUser(
             formData.get('email'),
             formData.get('password')
         );
-
     };
 
     let modalJSX = "";
     console.log(auth);
-    if (auth.errorMessage !== null){
+    if (auth.errorMessage !== null) {
         modalJSX = <MUIErrorModal />;
     }
     console.log(modalJSX);
@@ -62,7 +62,7 @@ export default function LoginScreen() {
                     }}
                 >
                     <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-                        <LockOutlinedIcon/>
+                        <LockOutlinedIcon />
                     </Avatar>
                     <Typography component="h1" variant="h5">
                         Sign in
@@ -107,7 +107,7 @@ export default function LoginScreen() {
                     </Box>
                 </Box>
             </Grid>
-            { modalJSX }
+            {modalJSX}
         </Grid>
     );
 }
